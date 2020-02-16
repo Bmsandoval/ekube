@@ -1,6 +1,6 @@
-APP?=kubert
+APP?=ekube
 PORT?=8080
-PROJECT?=github.com/bmsandoval/kubert
+PROJECT?=github.com/bmsandoval/ekube
 CONTAINER_IMAGE?=docker.io/bmsandoval/${APP}
 DEV_IMAGE?=docker.io/bmsandoval/go-build
 
@@ -13,17 +13,12 @@ CURDIR?=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 GOOS?=linux
 GOARCH?=amd64
 
-# Should only ever need to be run once
-push-dev:
-	docker build -f ./deployment/Dockerfile-dev -t $(DEV_IMAGE):latest .
-	docker push $(DEV_IMAGE):latest
-
 push-staging:
 	docker build -f ./deployment/Dockerfile-staging -t $(CONTAINER_IMAGE):$(RELEASE)-staging .
 	docker push $(CONTAINER_IMAGE):$(RELEASE)-staging
 
 local:
-	helm upgrade --install dev-${APP} ./chart/kubert
+	helm upgrade --install dev-${APP} ./chart/ekube
 
 remove:
 	helm delete dev-${APP}
@@ -32,7 +27,16 @@ stop:
 	minikube stop
 
 start:
-	minikube start --mount-string ${CURDIR}:${CURDIR} --mount
+	minikube start --mount-string $(CURDIR):$(CURDIR) --mount --cpus 4 --memory 8192
+
+depend:
+	go mod vendor
+
+#protoc:
+#	protoc -I handler/helloworld --go_out=plugins=grpc:handler/helloworld handler/helloworld/helloworld.proto
+
+mount:
+	nohup minikube mount $(CURDIR):$(CURDIR) &
 
 test:
 	go test -v -race ./...
@@ -41,7 +45,7 @@ test:
 #all: charts
 #
 #charts:
-#	cd chart && helm package kubert/
+#	cd chart && helm package ekube/
 #	mv chart/*.tgz docs/
-##	helm repo index docs --url https://alexellis.github.io/kubert/ --merge ./docs/index.yaml
+##	helm repo index docs --url https://alexellis.github.io/ekube/ --merge ./docs/index.yaml
 

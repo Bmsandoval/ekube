@@ -1,5 +1,5 @@
 Setup:
-edit .../kubert/chart/kubert/values.yaml and point it to the directory of this project
+edit .../ekube/chart/ekube/values.yaml and point it to the directory of this project
 $ make start
 $ make local
 follow the instruction to forward port

@@ -1,6 +1,7 @@
 .idea
 vendor
-kubert
+ekube
+nohup.out
 
 
 node_modules

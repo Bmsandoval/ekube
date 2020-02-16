@@ -1,38 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kubert.fullname" . }}
+  name: {{ include "ekube.fullname" . }}
   labels:
-    {{- include "kubert.labels" . | nindent 4 }}
+    {{- include "ekube.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "kubert.selectorLabels" . | nindent 6 }}
+      {{- include "ekube.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "kubert.selectorLabels" . | nindent 8 }}
+        {{- include "ekube.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "kubert.serviceAccountName" . }}
+      serviceAccountName: {{ include "ekube.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{.Values.registry}}/go-build:latest"
+          image: "golang:1.13"
           imagePullPolicy: {{ .Values.pullPolicy }}
           command:
             - "/bin/sh"
             - "-c"
             - |
               cd /src
-              CompileDaemon -log-prefix=false -build="go build -v -mod vendor -o ../app/main ." -command="../app/main"
+              while true; do
+                go run -mod vendor ./main.go
+              done
           volumeMounts:
             - mountPath: /src
               name: go-source
@@ -48,7 +50,7 @@ spec:
               protocol: TCP
           env:
             - name: PORT
-              value: "8080"
+              value: {{ .Values.service.port | quote }}
             - name: GOCACHE
               value: /cache
 {{/*          livenessProbe:*/}}
@@ -76,7 +78,7 @@ spec:
       volumes:
         - name: go-source
           hostPath:
-            path: {{ .Values.Kubert.Volumes.GoSource }}
+            path: {{ .Values.ekube.Volumes.GoSource }}
         - name: go-cache
           emptyDir: {}
         - name: go-app

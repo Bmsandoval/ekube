@@ -1,12 +1,12 @@
-# Default values for kubert.
+# Default values for ekube.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-Kubert:
-  Image: kubert
+ekube:
+  Image: ekube
   ImageTag: latest-dev
   Volumes:
-    GoSource: /Users/bryansandoval/projects/kubert
+    GoSource: /Users/bryansandoval/projects/ekube
 
 replicaCount: 1
 
@@ -36,7 +36,7 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 7777
 
 ingress:
   enabled: true
@@ -53,11 +53,11 @@ ingress:
 
 resources:
   limits:
-    cpu: 50m
-    memory: 128Mi
+    cpu: 1024m
+    memory: 1024Mi
   requests:
-    cpu: 50m
-    memory: 128Mi
+    cpu: 500m
+    memory: 1024Mi
 
 nodeSelector: {}
 
