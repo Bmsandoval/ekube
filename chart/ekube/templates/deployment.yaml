@@ -46,7 +46,7 @@ spec:
               name: go-build
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 7777
               protocol: TCP
           env:
             - name: PORT

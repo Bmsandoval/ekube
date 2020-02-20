@@ -1,5 +1,5 @@
 APP?=ekube
-PORT?=8080
+PORT?=7777
 PROJECT?=github.com/bmsandoval/ekube
 CONTAINER_IMAGE?=docker.io/bmsandoval/${APP}
 DEV_IMAGE?=docker.io/bmsandoval/go-build
