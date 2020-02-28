@@ -6,7 +6,8 @@ ekube:
   Image: ekube
   ImageTag: latest-dev
   Volumes:
-    GoSource: /Users/bryansandoval/projects/ekube
+    ProjectSource: /data
+    GoSource: ekube
 
 replicaCount: 1
 

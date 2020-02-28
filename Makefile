@@ -23,20 +23,11 @@ local:
 remove:
 	helm delete dev-${APP}
 
-stop:
-	minikube stop
-
-start:
-	minikube start --mount-string $(CURDIR):$(CURDIR) --mount --cpus 4 --memory 8192
-
 depend:
 	go mod vendor
 
 #protoc:
 #	protoc -I handler/helloworld --go_out=plugins=grpc:handler/helloworld handler/helloworld/helloworld.proto
-
-mount:
-	nohup minikube mount $(CURDIR):$(CURDIR) &
 
 test:
 	go test -v -race ./...
