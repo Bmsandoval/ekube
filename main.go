@@ -22,9 +22,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/bmsandoval/ekube/config"
+	"github.com/spf13/viper"
 	"log"
 	"net"
-	"os"
 
 	pb "github.com/bmsandoval/ekube/handler/helloworld"
 	"google.golang.org/grpc"
@@ -35,7 +36,8 @@ import (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	pb.UnimplementedGreeterServer
+	//pb.UnimplementedGreeterServer
+	config config.Configuration
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -45,12 +47,19 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("Port is not set.")
+	viperConfig := viper.GetViper()
+	viperConfig.AutomaticEnv()
+
+	conf := config.Configuration{}
+	conf.GetConfiguration(*viperConfig)
+	if err := conf.GetSecrets(); err != nil {
+		panic(err)
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
+	log.Printf("%+v", conf)
+
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", conf.SrvPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
