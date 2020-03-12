@@ -26,8 +26,8 @@ remove:
 depend:
 	go mod vendor
 
-#protoc:
-#	protoc -I handler/helloworld --go_out=plugins=grpc:handler/helloworld handler/helloworld/helloworld.proto
+protoc:
+	protoc -I servers/helloworld --go_out=plugins=grpc:servers/helloworld servers/helloworld/helloworld.proto
 
 test:
 	go test -v -race ./...

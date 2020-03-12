@@ -1,14 +1,25 @@
-package config
+package configs
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/spf13/viper"
 	"io/ioutil"
 )
 
 type Secrets struct {
 	DatabaseSecrets
+}
+
+func Configure() (*Configuration, error) {
+	viperConfig := viper.GetViper()
+	viperConfig.AutomaticEnv()
+
+	config := Configuration{}
+	config.GetConfiguration(*viperConfig)
+	if err := config.GetSecrets(); err != nil {
+		return nil, err
+	}
+	return &config, nil
 }
 
 type Configuration struct {
@@ -25,7 +36,7 @@ func (c *Configuration) GetConfiguration(v viper.Viper) {
 func (c *Configuration) GetSecrets() error {
 	var secretsMap Secrets
 
-	secrets, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", c.SrvSecretsPath, c.SrvSecretsFile))
+	secrets, err := ioutil.ReadFile(c.SrvSecretsFile)
 	if err != nil { return err }
 
 	if err := json.Unmarshal(secrets, &secretsMap); err != nil {

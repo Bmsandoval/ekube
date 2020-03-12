@@ -20,51 +20,39 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"github.com/bmsandoval/ekube/config"
-	"github.com/spf13/viper"
+	"github.com/bmsandoval/ekube/configs"
+	"github.com/bmsandoval/ekube/servers"
 	"log"
+	"math/rand"
 	"net"
+	"time"
 
-	pb "github.com/bmsandoval/ekube/handler/helloworld"
 	"google.golang.org/grpc"
 )
 
 
 //go:generate protoc -I handler/helloworld --go_out=plugins=grpc:handler/helloworld handler/helloworld/helloworld.proto
 
-// server is used to implement helloworld.GreeterServer.
-type server struct {
-	//pb.UnimplementedGreeterServer
-	config config.Configuration
-}
 
-// SayHello implements helloworld.GreeterServer
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Printf("Received: %v", in.GetName())
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
-}
 
 func main() {
-	viperConfig := viper.GetViper()
-	viperConfig.AutomaticEnv()
+	// Should seed the randomizer once at start of app
+	rand.Seed(time.Now().UnixNano())
 
-	conf := config.Configuration{}
-	conf.GetConfiguration(*viperConfig)
-	if err := conf.GetSecrets(); err != nil {
+	config, err := configs.Configure()
+	if err != nil {
 		panic(err)
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", conf.SrvPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.SrvPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{
-		config: conf,
-	})
+
+	servers.BundleAll(s, config)
 
 	log.Println("Starting Server...")
 

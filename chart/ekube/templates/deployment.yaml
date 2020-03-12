@@ -51,10 +51,8 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: SECRETS_PATH
-              value: "/var/vault"
             - name: SECRETS_FILE
-              value: {{ .Values.ekube.SecretsFileName }}
+              value: "/var/vault/{{ .Values.ekube.SecretsFileName }}"
             - name: SERVER_PORT
               value: {{ .Values.service.port | quote }}
             - name: MYSQL_SCHEMA

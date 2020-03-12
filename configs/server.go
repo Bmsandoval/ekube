@@ -1,4 +1,4 @@
-package config
+package configs
 
 import (
 	"github.com/spf13/viper"
@@ -7,7 +7,6 @@ import (
 
 type ServerConfiguration struct {
 	SrvPort string `json:"SERVER_PORT"`
-	SrvSecretsPath string `json:"SECRETS_PATH"`
 	SrvSecretsFile string `json:"SECRETS_FILE"`
 }
 
