@@ -56,16 +56,15 @@ func main() {
 		panic(err)
 	}
 
-	log.Printf("%+v", conf)
-
-
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", conf.SrvPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
+	pb.RegisterGreeterServer(s, &server{
+		config: conf,
+	})
 
 	log.Println("Starting Server...")
 
