@@ -20,44 +20,18 @@
 package main
 
 import (
-	"fmt"
-	"github.com/bmsandoval/ekube/configs"
-	"github.com/bmsandoval/ekube/servers"
-	"log"
+	"github.com/bmsandoval/ekube/entry"
+
+	// Import servers
+	_ "github.com/bmsandoval/ekube/servers/helloworld"
+
 	"math/rand"
-	"net"
 	"time"
-
-	"google.golang.org/grpc"
 )
-
-
-//go:generate protoc -I handler/helloworld --go_out=plugins=grpc:handler/helloworld handler/helloworld/helloworld.proto
-
-
 
 func main() {
 	// Should seed the randomizer once at start of app
 	rand.Seed(time.Now().UnixNano())
 
-	config, err := configs.Configure()
-	if err != nil {
-		panic(err)
-	}
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.SrvPort))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	s := grpc.NewServer()
-
-	servers.BundleAll(s, config)
-
-	log.Println("Starting Server...")
-
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-
+	entry.Entry()
 }

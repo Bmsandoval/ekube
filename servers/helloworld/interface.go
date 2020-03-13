@@ -1,18 +1,20 @@
 package helloworld
 
 import (
-	"github.com/bmsandoval/ekube/configs"
+	"github.com/bmsandoval/ekube/servers"
 	"google.golang.org/grpc"
 )
 
 // server is used to implement helloworld.GreeterServer.
 type Server struct {
-	//pb.UnimplementedGreeterServer
-	config configs.Configuration
+	servers.ServerContext
 }
 
-func RegisterServer(s *grpc.Server, config *configs.Configuration) {
-	RegisterGreeterServer(s, &Server{
-		config: *config,
+//type Registerable struct {}
+func init() {
+	servers.Include(func(s *grpc.Server, ctx servers.ServerContext){
+		RegisterGreeterServer(s, &Server{
+			ServerContext: ctx,
+		})
 	})
 }
