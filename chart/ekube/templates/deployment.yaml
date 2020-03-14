@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ekube.fullname" . }}
+  name: {{ include "fullname" . }}
   labels:
-    {{- include "ekube.labels" . | nindent 4 }}
+    {{- include "labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "ekube.selectorLabels" . | nindent 6 }}
+      {{- include "selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "ekube.selectorLabels" . | nindent 8 }}
+        {{- include "selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "ekube.serviceAccountName" . }}
+      serviceAccountName: {{ include "serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -61,6 +61,8 @@ spec:
               value: {{ .Values.Database.Host | quote}}
             - name: MYSQL_PORT
               value: {{ .Values.Database.Port | quote}}
+            - name: MIGRATION_LOCATION
+              value: {{ .Values.Database.MigrationLocation | quote }}
             - name: GOCACHE
               value: /cache
 {{/*          livenessProbe:*/}}
@@ -88,7 +90,7 @@ spec:
       volumes:
         - name: secrets
           configMap:
-            name: {{ template "ekube.fullname" . }}-secrets
+            name: {{ template "fullname" . }}-secrets
         - name: project-source
           hostPath:
             path: {{ .Values.ekube.Volumes.ProjectSource }}

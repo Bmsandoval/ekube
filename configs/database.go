@@ -6,6 +6,7 @@ import (
 )
 
 type DatabaseConfiguration struct {
+	DbMigrationLocation string `json:"MIGRATION_LOCATION"`
 	DbSchema string `json:"MYSQL_SCHEMA"`
 	DbHost string `json:"MYSQL_HOST"`
 	DbPort string `json:"MYSQL_PORT"`
