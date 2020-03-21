@@ -1,0 +1,74 @@
+package hello_test
+
+import (
+	"context"
+	"github.com/bmsandoval/ekube/db/models"
+	"github.com/bmsandoval/ekube/library/appcontext"
+	"github.com/bmsandoval/ekube/mocks/services_mocks"
+	"github.com/bmsandoval/ekube/servers"
+	"github.com/bmsandoval/ekube/servers/hello"
+	"github.com/bmsandoval/ekube/services"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestGetHelloServer(t *testing.T) {
+	var GetHelloUnitTestData = []GetHelloTestData{
+		{
+			BaseTestData: BaseTestData{
+				Description: "happy path",
+				Request:     hello.GetHelloRequest{},
+				Response:    hello.GetHelloReply{
+					Greetings: []string{"one", "two"},
+				},
+			},
+			MockGetRelease: &MockGetRelease{
+				OutGreetings: []models.Greetings{
+					{ Value: "one" },
+					{ Value: "two" },
+				},
+				OutError:     nil,
+			},
+		},
+	}
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	for _, data := range GetHelloUnitTestData {
+		t.Run(data.Description, func(t *testing.T) {
+			serviceBundle := MockGetHelloRequiredServices(mockCtrl, data)
+
+			server := hello.Server{
+				ServerContext: servers.ServerContext{
+					AppCtx: appcontext.Context{},
+					Bundle: *serviceBundle,
+				},
+			}
+
+			requestTestData := data.Request.(hello.GetHelloRequest)
+			responseTestData := data.Response.(hello.GetHelloReply)
+			responseData, _ := server.GetHello(context.Background(), &requestTestData)
+
+			assert.Equal(t, responseTestData, *responseData)
+		})
+	}
+}
+
+func MockGetHelloRequiredServices(mockCtrl *gomock.Controller, data GetHelloTestData) *services.Bundle {
+	helloMock := services_mocks.NewMock_hello(mockCtrl)
+	helloExpect := helloMock.EXPECT()
+
+	if data.MockGetRelease != nil {
+		helloExpect.Get().Return(
+				data.MockGetRelease.OutGreetings,
+				data.MockGetRelease.OutError)
+	}
+
+	serviceBundle := services.Bundle{
+		HelloSvc: helloMock,
+	}
+
+	return &serviceBundle
+}

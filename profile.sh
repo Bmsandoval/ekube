@@ -18,15 +18,27 @@ echo "Usage: $ ${FUNCNAME} [option] [flags]
 Options:
 - help: show this menu
 - protoc: Generate grpc files from the proto files
+- mock: Mock all services (req: gomock)
+- test: run all mock tests
 "
         ;;
         'protoc')
             ekubeProtoc
         ;;
+        'mock')
+            ekubeMockServices
+        ;;
+        'test')
+          ekubeTestServers
+        ;;
         *)
             echo -e "ERROR: invalid option. Try..\n$ ${FUNCNAME} help"
         ;;
     esac
+}
+
+ekubeTestServers () {
+     go test $(go list $EKUBE_DIR/...)
 }
 
 ekubeProtoc () {
@@ -47,6 +59,36 @@ ekubeProtoc () {
     else
         # If protobuf missing, tell them to install it
         echo "missing required package 'protobuf'. Please run the following commands and try again:"
+        echo "install protobuf, and then run..."
+        echo "$ go get -u github.com/golang/protobuf/protoc-gen-go"
+    fi
+}
+
+# Generate mock files for all services, putting the results in the proper file. renames some stuff for consistency.
+# If you update any services, recommend running this function to update the services for the tests.
+ekubeMockServices () {
+    packageName="mockgen"
+    which "${packageName}"
+
+    # Note that in bash, non-zero exit codes are error codes. returning 0 means success
+    if [[ "$?" == "0" ]]; then
+      MOCK_FOLDER="services"
+      SERVICE_DIR="${EKUBE_DIR}/${MOCK_FOLDER}"
+      SERVICES=$(find "${SERVICE_DIR}" -maxdepth 1 -mindepth 1 -type d)
+      for SERVICE_PATH in ${SERVICES}
+      do
+          if [[ -f ${SERVICE_PATH}/interface.go ]]; then
+              FOLDER_NAME="${SERVICE_PATH##*/}"
+              mockgen \
+                  -source=${SERVICE_PATH}/interface.go \
+                  -destination=mocks/${MOCK_FOLDER}_mocks/${FOLDER_NAME}_mock.go \
+                  -package=${MOCK_FOLDER}_mocks \
+                  -mock_names Service=Mock_${FOLDER_NAME}
+              fi
+      done
+    else
+        # If mockgen missing, tell them to install it
+        echo "missing required package 'mockgen'. Please run the following commands and try again:"
         echo "install protobuf, and then run..."
         echo "$ go get -u github.com/golang/protobuf/protoc-gen-go"
     fi
