@@ -2,16 +2,16 @@ package services
 
 import (
 	"github.com/bmsandoval/ekube/library/appcontext"
-	"github.com/bmsandoval/ekube/services/helloworld"
+	"github.com/bmsandoval/ekube/services/hello"
 	"reflect"
 )
 
 type Bundle struct {
-	HelloworldSvc helloworld.Service
+	HelloSvc hello.Service
 }
 
 var bundlables = []bundlable{
-	helloworld.Helpable{},
+	hello.Helpable{},
 }
 
 type bundlable interface {

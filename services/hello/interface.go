@@ -1,6 +1,9 @@
-package helloworld
+package hello
 
-import "github.com/bmsandoval/ekube/library/appcontext"
+import (
+	"github.com/bmsandoval/ekube/db/models"
+	"github.com/bmsandoval/ekube/library/appcontext"
+)
 
 type Helper struct {
 	AppCtx appcontext.Context
@@ -14,9 +17,10 @@ func(h Helpable) NewHelper(appCtx appcontext.Context) (interface{}, error) {
 }
 
 func (h Helpable) ServiceName() string {
-	return "HelloworldSvc"
+	return "HelloSvc"
 }
 
 type Service interface {
-	Create()
+	Create(greetingModel models.Greetings) (*models.Greetings, error)
+	Get() ([]models.Greetings, error)
 }

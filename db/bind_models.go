@@ -10,7 +10,7 @@ import (
 type Connection struct {
 	*sql.DB
 	SDB *squalor.DB
-	GreetingModel *models.Greetings
+	GreetingModel *squalor.Model
 }
 
 type bindable interface {

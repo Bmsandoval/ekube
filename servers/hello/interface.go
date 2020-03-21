@@ -1,4 +1,4 @@
-package helloworld
+package hello
 
 import (
 	"github.com/bmsandoval/ekube/servers"

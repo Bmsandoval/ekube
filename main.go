@@ -23,7 +23,7 @@ import (
 	"github.com/bmsandoval/ekube/entry"
 
 	// Import servers
-	_ "github.com/bmsandoval/ekube/servers/helloworld"
+	_ "github.com/bmsandoval/ekube/servers/hello"
 
 	"math/rand"
 	"time"

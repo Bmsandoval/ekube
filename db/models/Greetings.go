@@ -14,5 +14,5 @@ func (m Greetings) TableName() string {
 }
 
 func (m Greetings) ModelName() string {
-	return "GreetingsModel"
+	return "GreetingModel"
 }
