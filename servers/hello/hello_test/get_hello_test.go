@@ -23,7 +23,7 @@ func TestGetHelloServer(t *testing.T) {
 					Greetings: []string{"one", "two"},
 				},
 			},
-			MockGetRelease: &MockGetRelease{
+			MockGetHello: &MockGetHello{
 				OutGreetings: []models.Greetings{
 					{ Value: "one" },
 					{ Value: "two" },
@@ -60,10 +60,10 @@ func MockGetHelloRequiredServices(mockCtrl *gomock.Controller, data GetHelloTest
 	helloMock := services_mocks.NewMock_hello(mockCtrl)
 	helloExpect := helloMock.EXPECT()
 
-	if data.MockGetRelease != nil {
+	if data.MockGetHello != nil {
 		helloExpect.Get().Return(
-				data.MockGetRelease.OutGreetings,
-				data.MockGetRelease.OutError)
+				data.MockGetHello.OutGreetings,
+				data.MockGetHello.OutError)
 	}
 
 	serviceBundle := services.Bundle{

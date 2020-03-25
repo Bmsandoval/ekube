@@ -4,10 +4,10 @@ import "github.com/bmsandoval/ekube/db/models"
 
 type GetHelloTestData struct {
 	BaseTestData
-	MockGetRelease *MockGetRelease
+	MockGetHello *MockGetHello
 }
 
-type MockGetRelease struct {
+type MockGetHello struct {
 	OutGreetings []models.Greetings
 	OutError   error
 }
